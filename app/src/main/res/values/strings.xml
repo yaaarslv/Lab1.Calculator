@@ -3,9 +3,9 @@
     <string name="copy_result">Скопировать</string>
     <string name="calculation_error">Ошибка</string>
     <string name="key_clear">C</string>
-    <string name="key_divide">÷</string>
-    <string name="key_multiply">×</string>
-    <string name="key_subtract">−</string>
+    <string name="key_divide">/</string>
+    <string name="key_multiply">*</string>
+    <string name="key_subtract">-</string>
     <string name="key_add">+</string>
     <string name="key_decimal">.</string>
     <string name="key_equals">=</string>
