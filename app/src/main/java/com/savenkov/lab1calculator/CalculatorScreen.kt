@@ -83,7 +83,7 @@ fun CalculatorScreen(
             "+" -> first + second
             "-" -> first - second
             "*" -> first * second
-            "/" -> first / second
+            "/" -> if (second == 0.0) 0.0 else first / second
             else -> second
         }
     }
