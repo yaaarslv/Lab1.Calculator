@@ -24,8 +24,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Locale
-import kotlin.math.abs
 
 private const val MAX_INPUT_LENGTH = 16
 
@@ -80,40 +78,18 @@ fun CalculatorScreen(
         }
     }
 
-    fun showError() {
-        error = true
-        operation = ""
-        freshInput = true
-    }
-
     fun calculate(first: Double, second: Double, currentOperation: String): Double {
         return when (currentOperation) {
             "+" -> first + second
-            "−" -> first - second
-            "×" -> first * second
-            "÷" -> first / second
+            "-" -> first - second
+            "*" -> first * second
+            "/" -> first / second
             else -> second
         }
     }
 
     fun formatResult(value: Double): String {
-        if (value == 0.0) {
-            return "0"
-        }
-
-        if (abs(value) < 0.0000000001) {
-            return String.format(Locale.US, "%.8e", value)
-        }
-
-        val result = String.format(Locale.US, "%.10f", value)
-            .trimEnd('0')
-            .trimEnd('.')
-
-        return if (result.length <= MAX_INPUT_LENGTH) {
-            result
-        } else {
-            String.format(Locale.US, "%.8e", value)
-        }
+        return value.toString().removeSuffix(".0")
     }
 
     fun inputOperation(newOperation: String) {
@@ -123,10 +99,6 @@ fun CalculatorScreen(
 
         if (operation.isNotEmpty() && !freshInput) {
             val secondOperand = display.toDouble()
-            if (operation == "÷" && secondOperand == 0.0) {
-                showError()
-                return
-            }
 
             val result = calculate(accumulator, secondOperand, operation)
             display = formatResult(result)
@@ -145,10 +117,6 @@ fun CalculatorScreen(
         }
 
         val secondOperand = display.toDouble()
-        if (operation == "÷" && secondOperand == 0.0) {
-            showError()
-            return
-        }
 
         val result = calculate(accumulator, secondOperand, operation)
         display = formatResult(result)
@@ -162,7 +130,15 @@ fun CalculatorScreen(
             "C" -> clear()
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" -> inputDigit(key)
             "." -> inputDecimalPoint()
-            "+", "−", "×", "÷" -> inputOperation(key)
+            "-" -> {
+                if (freshInput && operation.isNotEmpty()) {
+                    display = "-"
+                    freshInput = false
+                } else {
+                    inputOperation("-")
+                }
+            }
+            "+", "*", "/" -> inputOperation(key)
             "=" -> calculateResult()
         }
     }
@@ -238,7 +214,7 @@ private fun CalculatorKeyboard(
             )
             CalculatorButton(
                 text = stringResource(R.string.key_divide),
-                onClick = { onKey("÷") },
+                onClick = { onKey("/") },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -253,7 +229,7 @@ private fun CalculatorKeyboard(
             CalculatorButton(stringResource(R.string.key_9), { onKey("9") }, Modifier.weight(1f))
             CalculatorButton(
                 stringResource(R.string.key_multiply),
-                { onKey("×") },
+                { onKey("*") },
                 Modifier.weight(1f)
             )
         }
@@ -268,7 +244,7 @@ private fun CalculatorKeyboard(
             CalculatorButton(stringResource(R.string.key_6), { onKey("6") }, Modifier.weight(1f))
             CalculatorButton(
                 stringResource(R.string.key_subtract),
-                { onKey("−") },
+                { onKey("-") },
                 Modifier.weight(1f)
             )
         }
