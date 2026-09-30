@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
+import kotlin.math.abs
 
 private const val MAX_INPUT_LENGTH = 16
 
@@ -89,7 +91,23 @@ fun CalculatorScreen(
     }
 
     fun formatResult(value: Double): String {
-        return value.toString().removeSuffix(".0")
+        if (value == 0.0) {
+            return "0"
+        }
+
+        if (abs(value) < 0.0000000001) {
+            return String.format(Locale.US, "%.8e", value)
+        }
+
+        val result = String.format(Locale.US, "%.10f", value)
+            .trimEnd('0')
+            .trimEnd('.')
+
+        return if (result.length <= MAX_INPUT_LENGTH) {
+            result
+        } else {
+            String.format(Locale.US, "%.8e", value)
+        }
     }
 
     fun inputOperation(newOperation: String) {
